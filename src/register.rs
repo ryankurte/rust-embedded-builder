@@ -1,26 +1,29 @@
+// Generic register type for builder style register interaction
+// Copyright 2018 Ryan Kurte
 
 use core::ptr::{read_volatile, write_volatile};
 use core::ops::{Add, Sub, Not, BitAnd, BitOr, Shl, Shr, BitAndAssign, BitOrAssign};
 
 // Zero trait for RegisterType implementations
+#[doc = "Zero trait allows types to be created with a value of zero"]
 pub trait Zero {
     fn zero() -> Self;
 }
 
 // One trait for RegisterType implementations
+#[doc = "One trait allows types to be created with a value of one"]
 pub trait One {
     fn one() -> Self;
 }
 
-// Unsigned integer trait
-// Allows register implementations to be generic over unsigned integer types
+#[doc = "RegisterType trait allows register implementations to be generic over unsigned integer types"]
 pub trait RegisterType<T>: Zero + One
                     + Not<Output=T> + Add<T, Output=T> + Sub<T, Output=T>
                     + BitAnd<T, Output=T> + BitOr<T, Output=T> + BitAndAssign<T> + BitOrAssign<T> 
                     + Shl<T, Output=T> + Shr<T, Output=T>
                     + Clone + Copy + Default + PartialEq {}
 
-// Helper macro for generating register type implementations
+#[doc = "Helper macro to generate RegisterType implementations for a given type"]
 #[macro_export]
 macro_rules! register_impl {
     ($t: ty) => {
