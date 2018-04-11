@@ -24,61 +24,45 @@ macro_rules! concat {
 #[macro_export]
 macro_rules! field_trait {
     (r, $name: ident, $field: tt, $t:ty, $shift: expr) => {
-        fn read_$name(&self) -> bool;
+        fn $name(&self) -> bool;
     };
     (w, $name: ident, $field: tt, $t:ty, $shift: expr) => {
-        fn write_$name(&mut self, v: bool);
-    };
-    (rw, $name: ident, $field: tt, $t:ty, $shift:expr) => {
-        field_trait!(r, $name, $field, $t, $shift);
-        field_trait!(w, $name, $field, $t, $shift);
+        fn $name(&mut self, v: bool);
     };
     (r, $name: ident, $field:tt, $t:ty, $shift:expr, $mask:expr) => {
-        fn read_$name(&self) -> $t;
+        fn $name(&self) -> $t;
     };
     (w, $name: ident, $field:tt, $t:ty, $shift:expr, $mask:expr) => {
-        fn write_$name(&mut self, v: $t);
+        fn $name(&mut self, v: $t);
     };
-    (rw, $name: ident, $field: tt, $t:ty, $shift:expr, $mask:expr) => {
-        field_trait!(r, $name, $field, $t, $shift, $mask);
-        field_trait!(w, $name, $field, $t, $shift, $mask);
-    }
 }
 
 // Generates a method for a provided field type
 #[macro_export]
 macro_rules! field_method {
     (r, $name: ident, $field: tt, $t:ty, $shift: expr) => {
-        fn read_$name(&self) -> bool {
+        fn $name(&self) -> bool {
             self.$field & (1 << $shift) != 0
         }
     };
     (w, $name: ident, $field: tt, $t:ty, $shift: expr) => {
-        fn write_$name(&mut self, v: bool) {
+        fn $name(&mut self, v: bool) {
             self.$field = match v {
                 true => self.$field | (1 << $shift),
                 false => self.$field & !(1 << $shift),
             };
         }
     };
-    (rw, $name: ident, $field: tt, $t:ty, $shift:expr, $mask:expr) => {
-        field_method!(r, $name, $field, $t, $shift);
-        field_method!(w, $name, $field, $t, $shift);
-    };
     (r, $name: ident, $field: tt, $t:ty, $shift: expr, $mask: expr) => {
-        fn read_$name(&self) -> $t {
+        fn $name(&self) -> $t {
             read_masked!(self.$field, $shift, $mask)
         }
     };
     (w, $name: ident, $field: tt, $t:ty, $shift: expr, $mask: expr) => {
-        fn write_$name(&mut self, v: $t) {
+        fn $name(&mut self, v: $t) {
             write_masked!(self.$field, $shift, $mask, v);
         }
     };
-    (rw, $name: ident, $field: tt, $t:ty, $shift:expr, $mask:expr) => {
-        field_method!(r, $name, $field, $t, $shift, $mask);
-        field_method!(w, $name, $field, $t, $shift, $mask);
-    }
 }
 
 // Creates a register with the specified fields
@@ -102,8 +86,10 @@ mod tests {
 
     register!(TESTREG1, u16, 
         [
-            rw, bit1,  1,  bool,   1;
-            rw, var1,  1,  u16,    2,  0b111;
+            r, read_bit1,   1,  bool,   1;
+            w, write_bit1,  1,  bool,   1;
+            r, read_var1,   1,  u16,    2,  0b111;
+            w, write_var1,  1,  u16,    2,  0b111;
         ]
     );
 
