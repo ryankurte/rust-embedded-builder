@@ -1,6 +1,7 @@
-// Helper macros to generate register interfaces
+// Helper macros to generate register accessors
+// Copyright 2018 Ryan Kurte
 
-// Writes a value to the provided variable with the given mask and shift
+#[doc = "Write a value to the provided variable with the given mask and shift"]
 #[macro_export]
 macro_rules! write_masked {
     ($write: expr, $shift: expr, $mask: expr, $val: expr) => {
@@ -8,7 +9,7 @@ macro_rules! write_masked {
     }
 }
 
-// Reads a value from the provided variable with the given mask and shift
+#[doc = "Read a value from the provided variable with the given mask and shift"]
 #[macro_export]
 macro_rules! read_masked {
     ($read: expr, $shift: expr, $mask: expr) => {
@@ -66,6 +67,8 @@ macro_rules! field_method {
 }
 
 // Creates a register with the specified fields
+#[doc = "Creates accessor traits and implementations for a given register\n"]
+#[doc = "`register!(name, type, [r/w/rw, field name, field in object (ie. 1 for register tuple), return type, (mask for non-bool types)];`"]
 #[macro_export]
 macro_rules! register {
     (
