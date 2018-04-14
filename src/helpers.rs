@@ -17,28 +17,24 @@ macro_rules! read_masked {
     }
 }
 
-macro_rules! concat {
-    ($a: expr, $b: expr) => { $a$b };
-}
-
-// Generates a trait for a provided field type
+#[doc = "Generates a trait for a provided field type"]
 #[macro_export]
 macro_rules! field_trait {
     (r, $name: ident, $field: tt, $t:ty, $shift: expr) => {
         fn $name(&self) -> bool;
     };
     (w, $name: ident, $field: tt, $t:ty, $shift: expr) => {
-        fn $name(&mut self, v: bool);
+        fn $name(mut self, v: bool) -> Self;
     };
     (r, $name: ident, $field:tt, $t:ty, $shift:expr, $mask:expr) => {
         fn $name(&self) -> $t;
     };
     (w, $name: ident, $field:tt, $t:ty, $shift:expr, $mask:expr) => {
-        fn $name(&mut self, v: $t);
+        fn $name(mut self, v: $t) -> Self;
     };
 }
 
-// Generates a method for a provided field type
+#[doc = "Generates a method for a provided field type"]
 #[macro_export]
 macro_rules! field_method {
     (r, $name: ident, $field: tt, $t:ty, $shift: expr) => {
@@ -47,11 +43,12 @@ macro_rules! field_method {
         }
     };
     (w, $name: ident, $field: tt, $t:ty, $shift: expr) => {
-        fn $name(&mut self, v: bool) {
+        fn $name(mut self, v: bool) -> Self {
             self.$field = match v {
                 true => self.$field | (1 << $shift),
                 false => self.$field & !(1 << $shift),
             };
+            self
         }
     };
     (r, $name: ident, $field: tt, $t:ty, $shift: expr, $mask: expr) => {
@@ -60,13 +57,13 @@ macro_rules! field_method {
         }
     };
     (w, $name: ident, $field: tt, $t:ty, $shift: expr, $mask: expr) => {
-        fn $name(&mut self, v: $t) {
+        fn $name(mut self, v: $t) -> Self{
             write_masked!(self.$field, $shift, $mask, v);
+            self
         }
     };
 }
 
-// Creates a register with the specified fields
 #[doc = "Creates accessor traits and implementations for a given register\n"]
 #[doc = "`register!(name, type, [r/w/rw, field name, field in object (ie. 1 for register tuple), return type, (mask for non-bool types)];`"]
 #[macro_export]

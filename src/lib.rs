@@ -2,7 +2,6 @@
 // Copyright 2018 Ryan Kurte
 
 #![feature(used)]
-#![feature(const_fn)]
 
 #![no_std]
 

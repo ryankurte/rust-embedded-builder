@@ -46,7 +46,7 @@ register_impl!(u64);
 // Register helper structure
 // This uses an internal value and builder approach to simplify interacting with registers.
 #[derive(Debug, PartialEq, Clone)]
-pub struct Register<T: RegisterType<T>> (pub(crate) usize, pub(crate) T);
+pub struct Register<T: RegisterType<T>> (pub usize, pub T);
 
 impl <T: RegisterType<T>>Register<T> {
     #[doc = "Creates a new register of the provided type with the specified address"]
